@@ -14,10 +14,7 @@ import Typography from "@mui/material/Typography";
 import Rating from "@mui/material/Rating";
 import CardActions from "@mui/material/CardActions";
 
-import {
-  useAccount,
-  useWriteContract,
-} from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 
 import { contractAddress, contractAbi } from "@/constants";
 import { publicClient } from "@/utils/client";
@@ -79,32 +76,6 @@ const Customer = () => {
     } catch (error) {
       handleOpenSnack({ stat: true, type: "error", message: error.message });
     }
-  };
-
-  const ChildComponent = ({ id }) => {
-    const [productDetails, setProductDetails] = useState(null);
-
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const data = await getProductDetailsById(id);
-          setProductDetails(data);
-        } catch (error) {
-          console.error("Error fetching product details:", error);
-        }
-      };
-      fetchData();
-    }, [id]);
-
-    return (
-      <div>
-        {productDetails && (
-          <Typography variant="h5" component="div">
-            Product reference : {productDetails.productRef}
-          </Typography>
-        )}
-      </div>
-    );
   };
 
   useEffect(() => {
@@ -191,6 +162,31 @@ const Customer = () => {
     // );
   };
 
+  const ChildComponent = ({ id }) => {
+    const [productDetails, setProductDetails] = useState(null);
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const data = await getProductDetailsById(id);
+          setProductDetails(data);
+        } catch (error) {
+          console.error("Error fetching product details:", error);
+        }
+      };
+      fetchData();
+    }, [id]);
+
+    return (
+      <div>
+        {productDetails && (
+          <Typography variant="h5" component="div">
+            Product reference : {productDetails.productRef}
+          </Typography>
+        )}
+      </div>
+    );
+  };
   return (
     <Container maxWidth="sm">
       <div

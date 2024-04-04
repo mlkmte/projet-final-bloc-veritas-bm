@@ -767,6 +767,19 @@ export const contractAbi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_feedbackId",
+        type: "uint256",
+      },
+    ],
+    name: "likeFeedback",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "owner",
     outputs: [

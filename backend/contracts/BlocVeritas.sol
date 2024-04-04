@@ -395,6 +395,11 @@ contract BlocVeritas is Ownable, AccessControl {
         return productsArr;
     }
 
+    /// @notice like feedback
+    function likeFeedback(uint256 _feedbackId) external {
+        feedbackArray[_feedbackId].likeCount++;
+    }
+
     /// @notice Get all feedback
     function getAllFeedback() external view returns (Feedback[] memory) {
         return feedbackArray;
