@@ -50,11 +50,6 @@ export default function Home() {
   });
 
 
-  useEffect(() => {
-      console.log(isAcustomer);
-  }, [isAcustomer]);
-
-
   return (
     <>{address === contractOwner ? <OwnerComponent /> : <UserComponent isAcustomer={isAcustomer} isAcompagnyOwner={isAcompagnyOwner}/>}</>
   );

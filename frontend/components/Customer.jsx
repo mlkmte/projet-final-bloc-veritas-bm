@@ -1,8 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import LoadingButton from "@mui/lab/LoadingButton";
-import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
@@ -10,10 +8,6 @@ import Alert from "@mui/material/Alert";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -23,8 +17,6 @@ import CardActions from "@mui/material/CardActions";
 import {
   useAccount,
   useWriteContract,
-  useWaitForTransactionReceipt,
-  useReadContract,
 } from "wagmi";
 
 import { contractAddress, contractAbi } from "@/constants";
@@ -66,9 +58,9 @@ const Customer = () => {
         data.map((row, key) => ({
           id: Number(key),
           productId: Number(row.productId),
+          compagnyId: Number(row.compagnyId),
         }))
       );
-      // console.log(products);
     } catch (error) {
       handleOpenSnack({ stat: true, type: "error", message: error.message });
     }
@@ -136,13 +128,67 @@ const Customer = () => {
     }));
   };
 
-  const handleSubmit = (productId) => {
-    const rating = ratings[productId];
-    const comment = comments[productId];
-    // Here you can perform any action with the submitted rating and comment, like sending them to a server
-    console.log(
-      `Product ${productId}: Rating - ${rating}, Comment - ${comment}`
-    );
+  const {
+    data: hash,
+    isPending: isPending,
+    writeContract: writeContract,
+  } = useWriteContract({
+    mutation: {
+      onSuccess: () => {
+        handleOpenSnack({
+          stat: true,
+          type: "success",
+          message: "Review has been registered",
+        });
+        getUserIdsProductsToRate();
+      },
+      onError: (error) => {
+        handleOpenSnack({
+          stat: true,
+          type: "error",
+          message: error.shortMessage,
+        });
+        console.log(error);
+      },
+    },
+  });
+
+  const addFeedback = async (
+    _compagnyId,
+    _productId,
+    _note,
+    _comment,
+    _purchaseDate,
+    _likeCount
+  ) => {
+    writeContract({
+      address: contractAddress,
+      abi: contractAbi,
+      functionName: "addFeedback",
+      args: [
+        address,
+        _compagnyId,
+        _productId,
+        _note,
+        _comment,
+        _purchaseDate,
+        _likeCount,
+      ],
+      account: address,
+    });
+  };
+
+  const handleSubmit = async (_productId, _compagnyId) => {
+    const rating = ratings[_productId];
+    const comment = comments[_productId];
+
+    const compagnyId = _compagnyId;
+    const date = 1711753200;
+    const like = 0;
+    await addFeedback(compagnyId, _productId, rating, comment, date, like);
+    // console.log(
+    //   `Commpagny : ${_compagnyId} - Product ${_productId}: Note - ${rating}, Comment - ${comment}, date achat - ${date}, like - ${like}`
+    // );
   };
 
   return (
@@ -167,15 +213,23 @@ const Customer = () => {
         }}
       >
         <Divider textAlign="left">Rate your products</Divider>
+        {hash && (
+          <Divider style={{ marginTop: 10 }}>
+            <Chip label={hash} size="small" />
+          </Divider>
+        )}
         {products &&
           products.map(
             (row) =>
-              row.productId != 0 && (
+              row.productId != 0 &&
+              row.allowed != false && (
                 <Box sx={{ minWidth: 275, marginTop: 2 }}>
                   <Card variant="outlined">
                     <CardContent>
                       <ChildComponent id={row.productId} />
-                      ID : {row.productId}
+                      PRODUCT ID : {row.productId}
+                      <br />
+                      COMPAGNY ID : {row.compagnyId}
                       <Box
                         sx={{
                           "& > legend": { mt: 2 },
@@ -211,7 +265,9 @@ const Customer = () => {
                     <CardActions>
                       <Button
                         size="small"
-                        onClick={() => handleSubmit(row.productId)}
+                        onClick={() =>
+                          handleSubmit(row.productId, row.compagnyId)
+                        }
                       >
                         Rate
                       </Button>

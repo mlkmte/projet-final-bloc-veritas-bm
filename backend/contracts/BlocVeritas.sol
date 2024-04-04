@@ -183,10 +183,7 @@ contract BlocVeritas is Ownable, AccessControl {
         string calldata _productRef,
         string calldata _url
     ) external onlyRole(COMPAGNY_OWNER_ROLE) onlyIfCompagnyExist(_compagnyId) {
-        bool isExist = compagnyProductExist(
-            _productRef,
-            _compagnyId
-        );
+        bool isExist = compagnyProductExist(_productRef, _compagnyId);
         if (isExist) {
             revert Unauthorized(
                 "This product ref already exist for this compagny"
@@ -238,6 +235,11 @@ contract BlocVeritas is Ownable, AccessControl {
         uint256 _purchaseDate,
         uint256 _likeCount
     ) external onlyIfCompagnyExist(_compagnyId) onlyIfProductExist(_productId) {
+        uint256 indexUserProdArr = getIndexInUsersProductsArray(
+            _userAddress,
+            _compagnyId,
+            _productId
+        );
         Feedback memory feedback;
         feedback.userAddress = _userAddress;
         feedback.compagnyId = _compagnyId;
@@ -250,6 +252,7 @@ contract BlocVeritas is Ownable, AccessControl {
         feedback.allowed = true;
         feedbackArray.push(feedback);
         uint256 id = feedbackArray.length - 1;
+        usersProductsArray[indexUserProdArr].allowed = false;
         feedBackCount++;
         emit FeedbackRegistered(id, _productId, _note);
     }
@@ -273,6 +276,27 @@ contract BlocVeritas is Ownable, AccessControl {
             }
         }
         return userProducts;
+    }
+
+    /// @notice Get index of userProductArray
+    /// @dev return the index
+    function getIndexInUsersProductsArray(
+        address _addrs,
+        uint256 _compagnyId,
+        uint256 _productId
+    ) internal view returns (uint256) {
+        uint256 longueurTableau = usersProductsArray.length;
+        uint256 index;
+        for (uint256 i = 0; i < longueurTableau; i++) {
+            if (
+                usersProductsArray[i].compagnyId == _compagnyId &&
+                usersProductsArray[i].userAddress == _addrs &&
+                usersProductsArray[i].productId == _productId
+            ) {
+                index = i;
+            }
+        }
+        return index;
     }
 
     /// @notice Get product details with product id
@@ -309,7 +333,6 @@ contract BlocVeritas is Ownable, AccessControl {
         }
         return product;
     }
-
 
     /// @notice if product exist by compagny
     /// @dev return true or false
@@ -370,5 +393,10 @@ contract BlocVeritas is Ownable, AccessControl {
             }
         }
         return productsArr;
+    }
+
+    /// @notice Get all feedback
+    function getAllFeedback() external view returns (Feedback[] memory) {
+        return feedbackArray;
     }
 }

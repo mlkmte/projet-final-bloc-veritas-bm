@@ -192,10 +192,16 @@ const Compagny = ({ isAcompagnyOwner }) => {
             }}
           />
 
+          {hash && (
+            <Divider style={{ marginTop: 10 }}>
+              <Chip label={hash} size="small" />
+            </Divider>
+          )}
+
           <LoadingButton
             onClick={addProduct}
             loading={isPending}
-            style={{ marginTop: 5 }}
+            style={{ marginTop: 10 }}
             fullWidth
             size="large"
             variant="contained"
@@ -203,12 +209,6 @@ const Compagny = ({ isAcompagnyOwner }) => {
           >
             <span>Submit</span>
           </LoadingButton>
-
-          {hash && (
-            <Divider style={{ marginTop: 20 }}>
-              <Chip label={hash} size="small" />
-            </Divider>
-          )}
         </div>
       </div>
       <div
@@ -247,6 +247,11 @@ const Compagny = ({ isAcompagnyOwner }) => {
               ))}
           </Select>
         </FormControl>
+        {hash2 && (
+          <Divider style={{ marginTop: 20 }}>
+            <Chip label={hash2} size="small" />
+          </Divider>
+        )}
         <LoadingButton
           onClick={addUserProduct}
           loading={isPending2}
