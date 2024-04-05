@@ -14,8 +14,7 @@ Le contrat a été développé en solidity sur hardhat et remix.
 
 ### Testing
 Les test ont été fait. Toutes les fonctions ont été testées recouvrant 82,61% des branche
-<img src="test.png" align="left" />
-<br />
+
 ### Front
 Voici la liste de la stack utilisée pour la réalisation du projet
 - ReactJs
