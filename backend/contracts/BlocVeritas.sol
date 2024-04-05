@@ -148,14 +148,6 @@ contract BlocVeritas is Ownable, AccessControl {
         _;
     }
 
-    /// @notice Modifier to allowed only user of this contract
-    // modifier onlyUserOfContract() {
-    //     if (msg.sender != owner() && !hasRole(COMPAGNY_OWNER_ROLE, msg.sender) && customers[msg.sender] == false) {
-    //         revert Unauthorized("Your are not allowed");
-    //     }
-    //     _;
-    // }
-
     /// @notice Add compagny
     /// @param _siret As compagny id
     function addCompagny(
@@ -362,7 +354,7 @@ contract BlocVeritas is Ownable, AccessControl {
     }
 
     /// @notice Check if user is a compagny owner
-    /// @dev return if of compagny
+    /// @dev return id of compagny
     function isAcompagnyOwner() external view returns (uint256) {
         return compagniesOwner[msg.sender];
     }
@@ -397,6 +389,7 @@ contract BlocVeritas is Ownable, AccessControl {
 
     /// @notice like feedback
     function likeFeedback(uint256 _feedbackId) external {
+        require(_feedbackId < feedbackArray.length, 'Feedback not found');
         feedbackArray[_feedbackId].likeCount++;
     }
 

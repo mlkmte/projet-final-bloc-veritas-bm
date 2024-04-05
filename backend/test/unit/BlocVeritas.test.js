@@ -41,7 +41,7 @@ describe("Test BlocVeritas contract", function () {
         .withArgs(siret1, addr1);
     });
 
-    it("Should not add compagny if user is not the owner", async function () {
+    it("Should revert if user is not the owner", async function () {
       const { deployedContract, addr1, addr2, siret1} = await loadFixture(deployContract);
         await expect(
           deployedContract.connect(addr1).addCompagny("BlocVeritas", "Paris", siret1, "0",addr2)
@@ -52,6 +52,26 @@ describe("Test BlocVeritas contract", function () {
     });
   });
 
+  describe("Test isAcompagnyOwner function", async function () {
+    it("Should return the compagny id if user is a compagny owner", async function () {
+      const { deployedContract, addr1, siret1} = await loadFixture(deployContract);
+
+      let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0",addr1)
+      await transaction.wait();
+
+      const isAowner = await deployedContract.connect(addr1).isAcompagnyOwner();
+      assert(isAowner.toString() === siret1);
+    });
+
+    it("Should return 0 if user not a compagny owner", async function () {
+      const { deployedContract, addr1, siret1} = await loadFixture(deployContract);
+
+      const isAowner = await deployedContract.connect(addr1).isAcompagnyOwner();
+      assert(isAowner.toString() === '0');
+    });
+  });
+  
+
   describe("Test addProduct function", async function () {
     it("Should add product", async function () {
       const { deployedContract, addr1, siret1, productRef1} = await loadFixture(deployContract);
@@ -59,13 +79,27 @@ describe("Test BlocVeritas contract", function () {
       let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0",addr1);
       await transaction.wait();
 
-        await expect(deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url"))
-        .to.emit(deployedContract, "ProductRegistered")
-        .withArgs(siret1, productRef1);
+      await expect(deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url"))
+      .to.emit(deployedContract, "ProductRegistered")
+      .withArgs(siret1, productRef1);
 
     });
 
-    it("Should not add product if user is not a compagny owner", async function () {
+    it("Should revert if product exist", async function () {
+      const { deployedContract, addr1, addr2, siret1, productRef1} = await loadFixture(deployContract);
+
+      let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0",addr1);
+      await transaction.wait();
+      transaction = await deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url");
+      await expect(
+        deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url")
+      ).to.be.revertedWithCustomError(
+        deployedContract,
+        "Unauthorized"
+      );
+    });
+
+    it("Should revert if user is not a compagny owner", async function () {
       const { deployedContract, addr1, addr2, siret1, productRef1} = await loadFixture(deployContract);
 
       let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0",addr1);
@@ -151,7 +185,29 @@ describe("Test BlocVeritas contract", function () {
     });
   });
 
+  describe("Test isAcustomer function", async function () {
+    it("Should return true if user is a customer", async function () {
+      const { deployedContract, addr1, addr2, siret1, productRef1} = await loadFixture(deployContract);
 
+      let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0",addr1)
+      await transaction.wait();
+
+      transaction = await deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url");
+      await transaction.wait();
+      const product = await deployedContract.getProductDetailsByRef(productRef1, siret1);
+      const productId = product.productId;
+      transaction = await deployedContract.connect(addr1).addUserProduct(addr2, siret1, productId);
+      transaction.wait();
+
+      expect(await deployedContract.connect(addr2).isAcustomer()).to.equal(true);
+    });
+
+    it("Should return false if user is not a customer", async function () {
+      const { deployedContract, addr1, siret1} = await loadFixture(deployContract);
+
+      expect(await deployedContract.connect(addr1).isAcustomer()).to.equal(false);
+    });
+  });
 
   describe("Test addFeedback function", async function () {
     it("Should add feedback", async function () {
@@ -219,6 +275,91 @@ describe("Test BlocVeritas contract", function () {
       await expect(deployedContract.connect(addr2).addFeedback(addr2, siret1, 123, note, comment, purchaseDate, likeCount)).to.be.revertedWith("This product don't exist");
     });
     
+  });
+
+  
+  describe("Test likeFeedback function", async function () {
+    it("Should like the feedback", async function () {
+      const { deployedContract, addr1, addr2, siret1, productRef1} = await loadFixture(deployContract);
+
+      let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0", addr1);
+      await transaction.wait();
+      transaction = await deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url");
+      await transaction.wait();
+      const product = await deployedContract.getProductDetailsByRef(productRef1, siret1);
+      const productId = product.productId;
+      transaction = await deployedContract.connect(addr1).addUserProduct(addr2, siret1, productId);
+      await transaction.wait();
+
+      const note = 5;
+      const comment = "comment test"
+      const purchaseDate = "1711753200"; // 30/03/2024
+      const likeCount = 0;
+
+      transaction = await deployedContract.connect(addr2).addFeedback(addr2, siret1, productId, note, comment, purchaseDate, likeCount);
+      await transaction.wait();
+      transaction = await deployedContract.connect(addr2).likeFeedback(0);
+      await transaction.wait();
+      
+      let feedbacks = await deployedContract.getAllFeedback();
+      const feedbacksLike = feedbacks[0].likeCount;
+
+      assert(feedbacksLike.toString() === '1');
+
+    });
+
+
+    it("Should revert if feedback not found", async function () {
+      const { deployedContract, addr1, addr2, siret1, productRef1} = await loadFixture(deployContract);
+
+      let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0", addr1);
+      await transaction.wait();
+      transaction = await deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url");
+      await transaction.wait();
+      const product = await deployedContract.getProductDetailsByRef(productRef1, siret1);
+      const productId = product.productId;
+      transaction = await deployedContract.connect(addr1).addUserProduct(addr2, siret1, productId);
+      await transaction.wait();
+
+      const note = 5;
+      const comment = "comment test"
+      const purchaseDate = "1711753200"; // 30/03/2024
+      const likeCount = 0;
+
+      transaction = await deployedContract.connect(addr2).addFeedback(addr2, siret1, productId, note, comment, purchaseDate, likeCount);
+      await transaction.wait();
+      await expect(deployedContract.connect(addr2).likeFeedback(10)).to.be.revertedWith("Feedback not found");
+    });
+  });
+
+
+  describe("Test getAllFeedback function", async function () {
+    it("Should get all feedback", async function () {
+      const { deployedContract, addr1, addr2, siret1, productRef1} = await loadFixture(deployContract);
+
+      let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0", addr1);
+      await transaction.wait();
+      transaction = await deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url");
+      await transaction.wait();
+      const product = await deployedContract.getProductDetailsByRef(productRef1, siret1);
+      const productId = product.productId;
+      transaction = await deployedContract.connect(addr1).addUserProduct(addr2, siret1, productId);
+      await transaction.wait();
+
+      const note = 5;
+      const comment = "comment test"
+      const purchaseDate = "1711753200"; // 30/03/2024
+      const likeCount = 0;
+
+      transaction = await deployedContract.connect(addr2).addFeedback(addr2, siret1, productId, note, comment, purchaseDate, likeCount);
+      await transaction.wait();
+      
+      let feedbacks = await deployedContract.getAllFeedback();
+      const feedbacksNote = feedbacks[0].note;
+
+      assert(feedbacksNote.toString() === '5');
+
+    });
   });
 
 
@@ -341,6 +482,28 @@ describe("Test BlocVeritas contract", function () {
       transaction = await deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url");
       await transaction.wait();
       await expect(deployedContract.connect(addr1).getAllProducts()).to.be.revertedWithCustomError(deployedContract,"OwnableUnauthorizedAccount");
+    });
+  });
+
+
+
+  describe("Test getAllCompagnyProducts function", async function () {
+    it("Should return all products", async function () {
+      const { deployedContract, addr1, siret1, productRef1} = await loadFixture(deployContract);
+
+      let transaction = await deployedContract.addCompagny("BlocVeritas", "Paris", siret1, "0", addr1);
+      await transaction.wait();
+      transaction = await deployedContract.connect(addr1).addProduct(siret1, productRef1, "base_url");
+      await transaction.wait();
+      let product = await deployedContract.connect(addr1).getAllCompagnyProducts(siret1);
+      const productRef = product[0].productRef;
+      assert(productRef == productRef1);
+    });
+
+    it("Should revert if user is not the compagny owner", async function () {
+      const { deployedContract, addr1, siret1} = await loadFixture(deployContract);
+
+      await expect(deployedContract.connect(addr1).getAllCompagnyProducts(siret1)).to.be.revertedWithCustomError(deployedContract,"AccessControlUnauthorizedAccount");
     });
   });
 
