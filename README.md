@@ -13,7 +13,8 @@ Bafode MINTE
 Le contrat a été développé en solidity sur hardhat et remix.
 
 ### Testing
-Les test ont été fait. Toutes les fonctions ont été testées recouvrant 82,61% des branche
+Les tests ont été réalisées sur le SM. Toutes les fonctions ont été testées recouvrant 82,61% des branches
+L'application a été testé avant son déploiement sur vercel
 
 ### Front
 Voici la liste de la stack utilisée pour la réalisation du projet
