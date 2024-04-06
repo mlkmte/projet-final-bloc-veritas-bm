@@ -3,7 +3,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { hardhat } from "wagmi/chains";
+// import { hardhat } from "wagmi/chains";
 import { sepolia } from '@/utils/sepolia' //sepolia
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
