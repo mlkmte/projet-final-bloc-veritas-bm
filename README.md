@@ -27,4 +27,4 @@ Voici la liste de la stack utilisée pour la réalisation du projet
 - VScode
 
 ### DApp Screen 
-<img src="img.png" align="left" />
+<img src="https://github.com/mlkmte/projet-final-bloc-veritas-bm/blob/main/img.PNG" align="left" />
