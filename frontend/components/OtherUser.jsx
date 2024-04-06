@@ -58,9 +58,8 @@ const OtherUser = () => {
         handleOpenSnack({
           stat: true,
           type: "success",
-          message: "Your like has been registered",
+          message: "Transaction add customer in progress",
         });
-        getAllFeedback();
       },
       onError: (error) => {
         handleOpenSnack({
@@ -122,15 +121,39 @@ const OtherUser = () => {
     }
   };
 
+  const handleSubmit = async (_feedbackId) => {
+    await like(_feedbackId);
+    console.log(`Feedback : ${_feedbackId}`);
+  };
 
   useEffect(() => {
     getAllFeedback();
   }, []);
 
-  const handleSubmit = async (_feedbackId) => {
-    await like(_feedbackId);
-    console.log(`Feedback : ${_feedbackId}`);
-  };
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: errorConfirmation,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+  useEffect(() => {
+    if (isConfirmed) {
+      getAllFeedback();
+      handleOpenSnack({
+        stat: true,
+        type: "success",
+        message: "Transaction has been registered",
+      });
+    }
+    if (errorConfirmation) {
+      handleOpenSnack({
+        stat: true,
+        type: "error",
+        message: errorConfirmation.message,
+      });
+    }
+  }, [isConfirmed, errorConfirmation]);
 
   const ChildComponent = ({ id }) => {
     const [productDetails, setProductDetails] = useState(null);

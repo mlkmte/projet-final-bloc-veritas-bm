@@ -58,7 +58,7 @@ const Owner = () => {
         handleOpenSnack({
           stat: true,
           type: "success",
-          message: "Compagny has been registered",
+          message: "Transaction add compagny in progress",
         });
       },
       onError: (error) => {
@@ -81,6 +81,30 @@ const Owner = () => {
       account: address,
     });
   };
+
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: errorConfirmation,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+  useEffect(() => {
+    if (isConfirmed) {
+      handleOpenSnack({
+        stat: true,
+        type: "success",
+        message: "Transaction has been registered",
+      });
+    }
+    if (errorConfirmation) {
+      handleOpenSnack({
+        stat: true,
+        type: "error",
+        message: errorConfirmation.message,
+      });
+    }
+  }, [isConfirmed, errorConfirmation]);
 
   return (
     <Container maxWidth="sm">

@@ -20,8 +20,8 @@ const Logger = () => {
     const logs = await publicClient.getContractEvents({
       address: contractAddress,
       abi: contractAbi,
-      fromBlock: 0n,
-      // fromBlock: 5506509n,
+      // fromBlock: 0n,
+      fromBlock: 5637744n, //sepolia
       toBlock: "latest",
     });
     setLogs(

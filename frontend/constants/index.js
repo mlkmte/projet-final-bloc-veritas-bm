@@ -1,4 +1,5 @@
-export const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+// export const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+export const contractAddress = "0x95Bd0F6a77E62dCfaA484F927cD1A2a57B59E9D8"; // sepolia
 export const contractAbi = [
   {
     inputs: [],

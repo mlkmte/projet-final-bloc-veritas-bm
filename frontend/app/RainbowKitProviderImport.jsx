@@ -3,7 +3,8 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { sepolia, hardhat } from "wagmi/chains";
+import { hardhat } from "wagmi/chains";
+import { sepolia } from '@/utils/sepolia' //sepolia
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const WALLET_CONNECT_ID = process.env.WALLET_CONNECT_ID || "";
@@ -11,8 +12,8 @@ console.log(WALLET_CONNECT_ID)
 const config = getDefaultConfig({
   appName: "Bloc Veritas",
   projectId: WALLET_CONNECT_ID,
-  chains: [hardhat],
-  // chains: [sepolia],
+  // chains: [hardhat],
+  chains: [sepolia], //sepolia
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 

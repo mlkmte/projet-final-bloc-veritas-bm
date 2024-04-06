@@ -109,9 +109,8 @@ const Customer = () => {
         handleOpenSnack({
           stat: true,
           type: "success",
-          message: "Review has been registered",
+          message: "Transaction add customer in progress",
         });
-        getUserIdsProductsToRate();
       },
       onError: (error) => {
         handleOpenSnack({
@@ -162,6 +161,31 @@ const Customer = () => {
     // );
   };
 
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: errorConfirmation,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+  useEffect(() => {
+    if (isConfirmed) {
+      getUserIdsProductsToRate();
+      handleOpenSnack({
+        stat: true,
+        type: "success",
+        message: "Transaction has been registered",
+      });
+    }
+    if (errorConfirmation) {
+      handleOpenSnack({
+        stat: true,
+        type: "error",
+        message: errorConfirmation.message,
+      });
+    }
+  }, [isConfirmed, errorConfirmation]);
+
   const ChildComponent = ({ id }) => {
     const [productDetails, setProductDetails] = useState(null);
 
@@ -187,6 +211,7 @@ const Customer = () => {
       </div>
     );
   };
+
   return (
     <Container maxWidth="sm">
       <div

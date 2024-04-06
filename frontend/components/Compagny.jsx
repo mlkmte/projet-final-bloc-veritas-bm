@@ -64,9 +64,8 @@ const Compagny = ({ isAcompagnyOwner }) => {
         handleOpenSnack({
           stat: true,
           type: "success",
-          message: "Product has been registered",
+          message: "Transaction add product in progress",
         });
-        fetchProducts();
       },
       onError: (error) => {
         handleOpenSnack({
@@ -89,7 +88,7 @@ const Compagny = ({ isAcompagnyOwner }) => {
         handleOpenSnack({
           stat: true,
           type: "success",
-          message: "Customer has been registered",
+          message: "Transaction add customer in progress",
         });
       },
       onError: (error) => {
@@ -149,6 +148,33 @@ const Compagny = ({ isAcompagnyOwner }) => {
     setProduct(event.target.value);
     console.log(event.target.value);
   };
+
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: errorConfirmation,
+  } = useWaitForTransactionReceipt({
+    hash,
+    hash2,
+  });
+  useEffect(() => {
+    if (isConfirmed) {
+      fetchProducts();
+      handleOpenSnack({
+        stat: true,
+        type: "success",
+        message: "Transaction has been registered",
+      });
+    }
+    if (errorConfirmation) {
+      fetchProducts();
+      handleOpenSnack({
+        stat: true,
+        type: "error",
+        message: errorConfirmation.message,
+      });
+    }
+  }, [isConfirmed, errorConfirmation]);
 
   useEffect(() => {
     setCompagnyId(isAcompagnyOwner.toString());
