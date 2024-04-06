@@ -14,7 +14,12 @@ import Typography from "@mui/material/Typography";
 import Rating from "@mui/material/Rating";
 import CardActions from "@mui/material/CardActions";
 
-import { useAccount, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useReadContract,
+} from "wagmi";
 
 import { contractAddress, contractAbi } from "@/constants";
 import { publicClient } from "@/utils/client";

@@ -21,7 +21,7 @@ const Logger = () => {
       address: contractAddress,
       abi: contractAbi,
       // fromBlock: 0n,
-      fromBlock: 5637744n, //sepolia
+      fromBlock: 5641519n, //sepolia
       toBlock: "latest",
     });
     setLogs(
