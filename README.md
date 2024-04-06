@@ -27,4 +27,4 @@ Voici la liste de la stack utilisée pour la réalisation du projet
 - VScode
 
 ### DApp Screen 
-<img src="dapp.png" align="left" />
+<img src="img.png" align="left" />
