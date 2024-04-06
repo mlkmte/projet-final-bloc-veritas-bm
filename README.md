@@ -1,8 +1,8 @@
 # Bloc Veritas
 
-- Lien vidéo : https://github.com/lmsenanayake/alyra/tree/main/6.%20Dapp/Projet3/final/demo.mp4 
-- Lien déploiement de l'application : https://voting-brown.vercel.app/ 
-- Lien de déploiement du SM sur sepolia : https://sepolia.etherscan.io/address/0x56f60b987A5ED3114359fCb4D20e96e1E1a0c9A9
+- Lien vidéo : 
+- Lien déploiement de l'application : https://projet-final-bloc-veritas-bm.vercel.app/
+- Lien de déploiement du SM sur sepolia : https://sepolia.etherscan.io/address/0x12D2e2870168934FF8B413c1Ac1e0db9794Edce1
 
 Développeur :  
 Bafode MINTE
@@ -10,11 +10,11 @@ Bafode MINTE
 ## Détails
 
 ### Contract
-Le contrat a été développé en solidity sur hardhat et remix.
+Le contrat a été développé en solidity avec hardhat et remix.
 
 ### Testing
 Les tests ont été réalisées sur le SM. Toutes les fonctions ont été testées recouvrant 82,61% des branches
-L'application a été testé avant son déploiement sur vercel
+La partie front de l'application a été testé avant son déploiement sur Vercel
 
 ### Front
 Voici la liste de la stack utilisée pour la réalisation du projet
@@ -23,6 +23,8 @@ Voici la liste de la stack utilisée pour la réalisation du projet
 - MaterialUI
 - Wagmi + Viem
 - RainbowKit
+- Remix
+- VScode
 
 ### DApp Screen 
 <img src="dapp.png" align="left" />
